@@ -62,20 +62,27 @@ class PN532_UART(PN532):
         time.sleep(timeout)
         return True
 
-    def _read_data(self, count):
-        """Read a specified count of bytes from the PN532."""
-        frame = self._uart.read(count)
-        if not frame:
-            raise BusyError("No data read from PN532")
+    def _read_data(self, count):           
+        frame = self.tty.read(6)
+        if frame is None or len(frame) == 0:
+          raise raise BusyError("No data read from PN532")
+        if frame.startswith(b"\x00\x00\xff\x00\xff\x00"):
+            if self.debug:
+              print("Reading: ", [hex(i) for i in frame])
+            return frame
+        LEN = frame[3]
+        if LEN == 0xFF:
+          frame += self.tty.read(3)
+          LEN = frame[5] << 8 | frame[6]
+        frame += self.tty.read(LEN + 1)
         if self.debug:
-            print("Reading: ", [hex(i) for i in frame])
-        else:
-            time.sleep(0.1)
+          print("Reading: ", [hex(i) for i in frame])
+        
         return frame
 
     def _write_data(self, framebytes):
         """Write a specified count of bytes to the PN532"""
         while self._uart.read(1):  # this would be a lot nicer if we could query the # of bytes
             pass
-        self._uart.write('\x55\x55\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00') # wake up!
+        #self._uart.write('\x55\x55\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00') # wake up!
         self._uart.write(framebytes)
