@@ -249,14 +249,14 @@ class PN532:
             print('Write frame: ', [hex(i) for i in frame])
         self._write_data(bytes(frame))
 
-    def _read_frame(self, length):
+    def _read_frame(self, length=0):
         """Read a response frame from the PN532 of at most length bytes in size.
         Returns the data inside the frame if found, otherwise raises an exception
         if there is an error parsing the frame.  Note that less than length bytes
         might be returned!
         """
         # Read frame with expected length of data.
-        response = self._read_data(length+8)
+        response = self._read_data()
         if self.debug:
             print('Read frame:', [hex(i) for i in response])
 
@@ -305,12 +305,12 @@ class PN532:
         if not self._wait_ready(timeout):
             return None
         # Verify ACK response and wait to be ready for function response.
-        if not _ACK == self._read_data(len(_ACK)):
+        if not _ACK == self._read_data():
             raise RuntimeError('Did not receive expected ACK from PN532!')
         if not self._wait_ready(timeout):
             return None
         # Read response bytes.
-        response = self._read_frame(response_length+2)
+        response = self._read_frame()
         # Check that response is for the called function.
         if not (response[0] == _PN532TOHOST and response[1] == (command+1)):
             raise RuntimeError('Received unexpected command response!')
@@ -334,7 +334,7 @@ class PN532:
         # - 0x01, use IRQ pin
         # Note that no other verification is necessary as call_function will
         # check the command was executed as expected.
-        self.call_function(_COMMAND_SAMCONFIGURATION, params=[0x01, 0x14, 0x01])
+        self.call_function(_COMMAND_SAMCONFIGURATION, params=[0x01, 0x00, 0x00]) #old ones [0X01, 0X14, 0X01]
 
     def read_passive_target(self, card_baud=_MIFARE_ISO14443A, timeout=1):
         """Wait for a MiFare card to be available and return its UID when found.
