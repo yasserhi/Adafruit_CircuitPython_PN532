@@ -65,7 +65,7 @@ class PN532_UART(PN532):
     def _read_data(self, count):           
         frame = self.tty.read(6)
         if frame is None or len(frame) == 0:
-          raise raise BusyError("No data read from PN532")
+          raise BusyError("No data read from PN532")
         if frame.startswith(b"\x00\x00\xff\x00\xff\x00"):
             if self.debug:
               print("Reading: ", [hex(i) for i in frame])
