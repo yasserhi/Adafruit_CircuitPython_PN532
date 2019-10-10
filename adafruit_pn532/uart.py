@@ -62,7 +62,7 @@ class PN532_UART(PN532):
         time.sleep(timeout)
         return True
 
-    def _read_data(self, count):           
+    def _read_data(self, count = 6):           
         frame = self._uart.read(6)
         if frame is None or len(frame) == 0:
           raise BusyError("No data read from PN532")
