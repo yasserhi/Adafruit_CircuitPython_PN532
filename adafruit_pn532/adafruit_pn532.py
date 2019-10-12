@@ -282,7 +282,7 @@ class PN532:
         # Return frame data.
         return response[offset+2:offset+2+frame_len]
 
-    def call_function(self, command, response_length=0, params=[], timeout=1): # pylint: disable=dangerous-default-value
+    def call_function(self, command, response_length=0, params=[], timeout=.5): # pylint: disable=dangerous-default-value
         """Send specified command to the PN532 and expect up to response_length
         bytes back in a response.  Note that less than the expected bytes might
         be returned!  Params can optionally specify an array of bytes to send as
