@@ -85,5 +85,5 @@ class PN532_UART(PN532):
         self._uart.flushInput()
         #while self._uart.read(1):  # this would be a lot nicer if we could query the # of bytes
         #    pass
-        #self._uart.write(b'\x55\x55\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00') # wake up!
+        self._uart.write(b'\x55\x55\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00') # wake up!
         self._uart.write(framebytes)
